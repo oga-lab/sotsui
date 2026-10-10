@@ -2,7 +2,7 @@
 
 書字表現者 OGA による論考「書における「卒意」の拡張——身体・時間・空間への書道パフォーマンス表現論」の公開ページです。
 
-An essay by OGA, calligraphy performer: *Extending Sotsui in Calligraphy into Body, Time, and Space — A Theory of Calligraphy Performance.*
+An essay by OGA, calligraphic performance artist: *Extending Sotsui in Calligraphy into Body, Time, and Space — A Theory of Calligraphy Performance.*
 
 ## 読む ／ Read
 
