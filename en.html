@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Extension of Sotsui ／ OGA</title>
+<meta name="description" content="An essay by OGA: Extending sotsui in calligraphy into body, time, and space — a theory of calligraphy performance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Shippori+Mincho:wght@400;500;600;800&family=Zen+Antique&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0708;
+    --bg2:#120c0d;
+    --ink:#ede4e0;
+    --ink-dim:#9a8d88;
+    --red:#d61f1f;
+    --red-deep:#8c1414;
+    --line:#2a1f20;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Shippori Mincho",serif;
+    font-weight:400;
+    line-height:2.05;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:radial-gradient(circle at 50% 50%, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size:3px 3px;
+    pointer-events:none;
+    z-index:1;
+  }
+  .wrap{position:relative;z-index:2;}
+
+  /* 戻る帯 */
+  .topbar{
+    position:sticky;top:0;z-index:10;
+    background:rgba(10,7,8,0.82);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    padding:1em 6vw;
+    display:flex;align-items:center;justify-content:space-between;gap:1.4em;
+  }
+  .topbar a{
+    color:var(--ink-dim);text-decoration:none;
+    font-size:.72rem;letter-spacing:.32em;text-indent:.32em;
+    transition:color .4s ease;
+    white-space:nowrap;
+  }
+  .topbar a:hover{color:var(--red);}
+  .topbar__r{display:flex;gap:1.6em;}
+
+  /* 扉 */
+  .head{
+    padding:16vh 7vw 11vh;
+    max-width:720px;margin:0 auto;
+    text-align:center;
+    border-bottom:1px solid var(--line);
+  }
+  .head__label{
+    font-size:.66rem;letter-spacing:.5em;color:var(--ink-dim);
+    text-indent:.5em;margin-bottom:2.4em;
+  }
+  .head__title{
+    font-family:"Zen Antique",serif;
+    font-size:clamp(1.7rem,6vw,2.7rem);
+    letter-spacing:.14em;line-height:1.5;text-indent:.14em;
+    margin-bottom:1.4em;
+  }
+  .head__sub{
+    font-size:clamp(.92rem,2.4vw,1.05rem);
+    color:var(--ink-dim);letter-spacing:.08em;line-height:1.9;
+  }
+
+  /* 目次 */
+  .toc{
+    max-width:680px;margin:0 auto;
+    padding:9vh 7vw 9vh;
+    border-bottom:1px solid var(--line);
+    scroll-margin-top:4em;
+  }
+  .toc__h{
+    font-size:.66rem;letter-spacing:.5em;color:var(--ink-dim);
+    text-indent:.5em;margin-bottom:2.8em;text-align:center;
+  }
+  .toc ol{list-style:none;display:grid;gap:.2em;}
+  .toc li a{
+    display:flex;align-items:baseline;gap:1.1em;
+    text-decoration:none;color:var(--ink);
+    padding:.85em .4em;
+    border-bottom:1px solid transparent;
+    transition:color .35s ease,border-color .35s ease;
+  }
+  .toc li a:hover{color:var(--red);border-bottom-color:var(--line);}
+  .toc__num{
+    color:var(--red);font-size:.78rem;letter-spacing:.12em;
+    min-width:2.2em;flex-shrink:0;
+    font-family:"Zen Antique",serif;
+  }
+  .toc__ttl{
+    font-size:clamp(.96rem,2.6vw,1.08rem);
+    letter-spacing:.06em;line-height:1.5;
+  }
+
+  /* 本文 */
+  .doc{
+    padding:10vh 7vw 12vh;
+    max-width:680px;margin:0 auto;
+  }
+  .doc h2{scroll-margin-top:5em;}
+  .doc h2{
+    font-size:clamp(1.3rem,4vw,1.7rem);
+    font-weight:600;letter-spacing:.08em;line-height:1.6;
+    margin:3.4em 0 1.2em;
+    padding-bottom:.5em;
+    border-bottom:1px solid var(--line);
+  }
+  .doc h2:first-child{margin-top:0;}
+  .doc h3{
+    font-size:clamp(1.08rem,3vw,1.25rem);
+    font-weight:500;letter-spacing:.06em;color:var(--ink);
+    margin:2.8em 0 1em;
+  }
+  .doc h3::before{
+    content:"";display:inline-block;
+    width:.7em;height:1px;background:var(--red);
+    vertical-align:middle;margin-right:.7em;
+    transform:translateY(-.18em);
+  }
+  .doc h4{
+    font-size:1rem;font-weight:500;color:var(--red);
+    letter-spacing:.04em;margin:2.4em 0 .9em;
+  }
+  .doc p{
+    margin:0 0 1.5em;
+    text-align:justify;
+    letter-spacing:.02em;
+  }
+
+  /* 注参照（本文中の（注N）） */
+  .noteref{
+    color:var(--red);text-decoration:none;
+    font-size:.82em;
+    padding:0 .04em;
+  }
+  .noteref:hover{text-decoration:underline;}
+
+  /* 注釈一覧 */
+  .notes{
+    max-width:680px;margin:0 auto;
+    padding:9vh 7vw 12vh;
+    border-top:1px solid var(--line);
+  }
+  .notes__h{
+    font-size:.66rem;letter-spacing:.5em;color:var(--ink-dim);
+    text-indent:.5em;margin-bottom:2.6em;text-align:center;
+  }
+  .notes ol{list-style:none;display:grid;gap:1.5em;}
+  .note{
+    display:grid;grid-template-columns:3.4em 1fr;gap:1em;
+    font-size:.86rem;line-height:1.95;color:var(--ink-dim);
+    scroll-margin-top:5em;
+  }
+  .note__back{
+    color:var(--red);text-decoration:none;letter-spacing:.08em;
+    padding-top:.05em;
+    transition:opacity .3s ease;
+  }
+  .note__back:hover{opacity:.6;}
+  .note__body{letter-spacing:.02em;}
+  p[id^="ref"], a[id^="ref"]{scroll-margin-top:5em;}
+
+  /* 結び */
+  .foot{
+    padding:8vh 7vw 7vh;text-align:center;
+    border-top:1px solid var(--line);
+    color:var(--ink-dim);font-size:.74rem;
+    letter-spacing:.3em;text-indent:.3em;line-height:2.4;
+  }
+  .foot .red{color:var(--red);}
+
+  @media(max-width:480px){
+    .note{grid-template-columns:3em 1fr;gap:.7em;}
+    .doc p{text-align:left;}
+  }
+
+  body.en{font-family:"EB Garamond","Shippori Mincho",serif;line-height:1.85;font-size:1.06rem;}
+  body.en .doc p{letter-spacing:0;hyphens:auto;-webkit-hyphens:auto;}
+  body.en .topbar a{letter-spacing:.18em;text-indent:.18em;}
+  body.en .head__title{font-family:"EB Garamond",serif;font-weight:500;letter-spacing:.06em;text-indent:.06em;}
+  body.en .head__sub{letter-spacing:.02em;font-style:italic;}
+  body.en .toc__num{font-family:"EB Garamond",serif;min-width:3.2em;}
+  body.en .doc h3,.terms h3{letter-spacing:.01em;}
+  .noteref sup{font-size:.72em;line-height:0;}
+  .termref{color:inherit;text-decoration:none;border-bottom:1px dotted var(--red);}
+  .termref:hover{color:var(--red);}
+  .terms{max-width:680px;margin:0 auto;padding:9vh 7vw 6vh;border-bottom:1px solid var(--line);}
+  .terms h2{font-size:.72rem;font-weight:400;letter-spacing:.4em;text-indent:.4em;color:var(--ink-dim);text-align:center;margin-bottom:2.2em;}
+  .terms .lead{color:var(--ink-dim);font-size:.95rem;margin-bottom:2.4em;}
+  .terms h3{font-size:1.1rem;font-weight:500;margin:2.2em 0 .7em;color:var(--ink);scroll-margin-top:5em;}
+  .terms h3.group{font-size:.72rem;letter-spacing:.4em;color:var(--red);text-align:center;margin:3.6em 0 .6em;font-weight:400;}
+  .terms p{color:var(--ink-dim);font-size:.96rem;margin-bottom:1.1em;text-align:justify;}
+  @media(max-width:480px){.terms p{text-align:left;}}
+</style>
+</head>
+<body class="en">
+<div class="wrap">
+
+  <nav class="topbar">
+    <a href="ronko.html" lang="ja">日本語</a>
+    <a href="#toc">Contents ↑</a>
+  </nav>
+
+  <header class="head">
+    <div class="head__label">E S S A Y</div>
+    <h1 class="head__title">The Extension of <i>Sotsui</i></h1>
+    <p class="head__sub">Extending <i>Sotsui</i> in Calligraphy into Body, Time, and Space:<br>A Theory of Calligraphy Performance</p>
+  </header>
+
+  <nav class="toc" id="toc" aria-label="Contents">
+    <div class="toc__h">C O N T E N T S</div>
+    <ol>
+      <li><a href="#terms"><span class="toc__num">—</span><span class="toc__ttl">Key Terms</span></a></li>
+      <li><a href="#sec-00"><span class="toc__num">Intro</span><span class="toc__ttl">Introduction</span></a></li>
+      <li><a href="#sec-01"><span class="toc__num">1</span><span class="toc__ttl"><i>Sotsui</i> in Calligraphy</span></a></li>
+      <li><a href="#sec-02"><span class="toc__num">2</span><span class="toc__ttl">The Structure of This Practice</span></a></li>
+      <li><a href="#sec-03"><span class="toc__num">3</span><span class="toc__ttl">Tuning Emotion and Sensation</span></a></li>
+      <li><a href="#sec-04"><span class="toc__num">4</span><span class="toc__ttl">The Extension of <i>Sotsui</i></span></a></li>
+      <li><a href="#sec-05"><span class="toc__num">5</span><span class="toc__ttl">Scenes: The Four Phases of <i>Torine</i></span></a></li>
+      <li><a href="#sec-06"><span class="toc__num">6</span><span class="toc__ttl">Discussion</span></a></li>
+      <li><a href="#sec-07"><span class="toc__num">End</span><span class="toc__ttl">Conclusion</span></a></li>
+    </ol>
+  </nav>
+
+  <section class="terms" id="terms">
+<h2>K E Y　T E R M S</h2>
+<p class="lead">Several words in this essay are kept in Japanese, because no English word carries what they mean. They are explained here. Japanese names are given in Japanese order, family name first.</p>
+<h3 id="term-sotsui"><em>Sotsui</em> (卒意)</h3>
+<p>A term from the East Asian calligraphic tradition, written with the characters 卒 (“sudden, unprepared”) and 意 (“intention, mind”). It names a state in which the brush moves as the heart leads, without deliberate planning. Yet <em>sotsui</em> is not carelessness, nor the absence of skill. It presupposes long training: technique and aesthetic judgment have sunk so deeply into the body that they no longer rise to conscious awareness, and the brush is guided from that depth.</p>
+<p>Traditionally, <em>sotsui</em> is contrasted with <em>yōi</em> (用意), the careful preparation behind formal works. Letters and drafts written in the moment, such as Yan Zhenqing’s <em>Draft of a Requiem to My Nephew</em>, are classic examples of writing in <em>sotsui</em>.</p>
+<p>English words such as “spontaneity” capture only part of this. Spontaneity can suggest freedom <em>from</em> training; <em>sotsui</em> is the freedom that training makes possible. This essay therefore keeps the Japanese word, and extends its scope from the trace left on paper to the writing body itself.</p>
+<h3 id="term-torine"><em>Torine</em> (とりね)</h3>
+<p>A word coined by the author, from <em>toru</em> (取る, “to take”) and <em>ne</em> (根, “root”): taking the root. It names the movement by which a single core is drawn out from a tangle of scattered impressions. <em>Torine</em> is not one decisive act but a back-and-forth: touching the core, slipping from it, adjusting, touching again. It happens at many scales at once — days of digesting an experience, minutes of attunement in rehearsal, split-second judgments on stage, the faint tremor within one stroke of the brush. The core that is drawn out is held as a keyword, and in performance new words grow from it as the author writes. Writing itself becomes the continuation of <em>torine</em>.</p>
+<h3 id="term-kaku"><em>Kaku</em> (かく)</h3>
+<p>In Japanese, the verb <em>kaku</em> is written with several different characters: 欠く (to chip, to lack), 掻く (to scratch), 書く (to write), and 画く (to draw). The calligrapher and theorist Ishikawa Kyūyō treats these as one root act: working on an object with a tool, transforming it by subtraction. To write, in this sense, is not to add something, but to take something away. This wordplay is lost in English, but the idea runs through the whole essay: writing is friction, and every stroke changes its surface irreversibly.</p>
+<h3 id="term-hisshoku"><em>Hisshoku</em> (筆蝕)</h3>
+<p>A term coined by Ishikawa Kyūyō for the whole process in which the brush meets the paper, leaves a trace, and lifts away. The word joins 筆 (<em>hitsu</em>, “brush”) with 蝕 (<em>shoku</em>, “to erode, to eat away” — the same character used for an eclipse). Ishikawa sees two moments bound together in it: 〈触〉 (<em>shoku</em>, “touch”), the felt friction of contact, and 〈蝕〉 (<em>shoku</em>, “erosion”), the trace fixed on the surface. In Japanese the two are pronounced alike, so <em>hisshoku</em> holds touch and erosion in a single sound. Ishikawa locates the essence of writing in the trace that remains; this essay shifts the weight toward the time the body passes through.</p>
+<h3 id="term-wadachi"><em>Wadachi</em> (轍)</h3>
+<p>Literally, the ruts left in a road by the wheels of a cart. The author uses the word for what remains after the motion of friction has passed. What matters in <em>wadachi</em> is not the mark itself but the fact that a body went through — the continuity of a movement. A rut is not a finished form; it is time that a body and its senses have travelled. For this reason, <em>wadachi</em> need not remain on paper: it includes writing in the air, which vanishes as it is made.</p>
+<h3 id="term-sakui"><em>Sakui</em> (作意)</h3>
+<p>Deliberate contrivance of form: consciously working out how a character should look. The calligrapher Ueda Sōkyū argued that <em>sakui</em> should not be thrown away but refined through mastery until it “no longer appears as <em>sakui</em>.” <em>Sakui</em> and <em>sotsui</em> share the character 意 (mind, intention); they mark two different relations between intention and the moving brush.</p>
+<h3 id="term-works" class="group">Titles of Works</h3>
+<h3 id="work-akazukin"><em>Akazukin</em> (Little Grime Hood, 垢ずきん)</h3>
+<p>A play on <em>Akazukin</em> (赤ずきん), the Japanese title of <em>Little Red Riding Hood</em>. The author replaces 赤 (<em>aka</em>, “red”) with 垢 (<em>aka</em>, “grime” — the dirt that builds up on skin), which is pronounced the same. The title folds the fairy tale’s red hood into the grime of a body that has been touched.</p>
+<h3 id="work-kintsugi"><em>Kintsugi</em> (金継)</h3>
+<p>The Japanese art of repairing broken pottery with lacquer and gold, so that the cracks become part of the vessel’s beauty rather than being hidden. The character 継 (<em>tsugu</em>) means to join, to mend, and to carry on. In the performance, this single character is the last thing written.</p>
+<h3 id="work-tomatoes"><em>Tomatoes at Knockdown Prices</em> (トマトの叩き売り)</h3>
+<p>In this work, the tomato stands for the heart — close to it in shape — and the heart, for the author, stands for the inner self. <em>Tatakiuri</em> (叩き売り) is a traditional style of street selling in Japan: a vendor slaps the stall and delivers a quick, swaggering patter, calling out a high price and knocking it down step by step until the goods are sold. It is selling by momentum and nerve, with a light, joking touch. The title names what the space was meant to be: a place where the heart one keeps hidden is put on display lightly, loudly, and in public — sold off, as it were, at knockdown prices.</p>
+<h3 id="work-mermaid"><em>The Mermaid Conditioning Program</em> (人魚育成計画)</h3>
+<p>The Japanese word <em>ikusei</em> (育成) usually means raising or cultivating — of plants, animals, or young people. Here it carries a darker double meaning: the breeding of a creature, and the training of a woman into obedience. “Conditioning” is chosen to hold both the laboratory and the discipline.</p>
+  </section>
+
+  <article class="doc">
+<h2 id="sec-00">Introduction</h2>
+<p>This essay discusses a form of performance that extends the calligraphic concept of <a class="termref" href="#term-sotsui"><em>sotsui</em></a> into body, time, and space.</p>
+<p>Calligraphy has traditionally been a visual art complete on the surface of the paper. Calligraphy written in <em>sotsui</em>, too, has been understood as the free unfolding of the brushstroke. Most calligraphy performances likewise grow out of <em>sekijō kigō</em> — writing before an audience — and place the completion of the written work at the center of expression.</p>
+<p>The center of this practice, by contrast, is not the completed work. It is the continual change in the state of the body while writing. That change itself is what is expressed. This practice is thus an attempt to turn calligraphy from “an object to be shown” into “a process continually generated together with the body.”</p>
+<p>At the core of making lies not the reproduction of technique, but the tuning of emotion and sensation<a class="noteref" id="ref1" href="#note1"><sup>1</sup></a>. Beginning from an inner state, the sensations that arise from it are carried into the movements of body and brush, and expression emerges from there. This is not the reproduction of a fixed form, but a process that responds to a continually changing flow — the state of <em>sotsui</em>.</p>
+<p>In short, this practice is an attempt to offer <em>sotsui</em> — which until now has been grasped only through the writing left on paper — together with the writer’s whole body.</p>
+<h2 id="sec-01">1. <em>Sotsui</em> in Calligraphy</h2>
+<p>This chapter establishes what <em>sotsui</em>, the starting point of the essay, is, and traces how it has appeared in the history of calligraphy.</p>
+<h3>1-1. What Is <em>Sotsui</em>?</h3>
+<p><em>Sotsui</em> in calligraphy is a state in which, on the basis of acquired technique and convention, the brush moves as the heart leads. It is not disordered movement. It names the stage at which technique internalized in the body, and a cultivated aesthetic sense, guide the brush without any longer being conscious.</p>
+<p><em>Sotsui</em> presupposes mastery of technique, yet it arises at the stage when that mastery has sunk below consciousness and no longer appears as contrivance. Inoue Yūichi, for instance, once drew lines so absorbed that, in his own words, he “did not know how he had written them.” Of such a line — free of hesitation and of carelessness alike — the critic Unagami Masaomi said it could only be called a line forged by long years of calligraphy<a class="noteref" id="ref2" href="#note2"><sup>2</sup></a><a class="noteref" id="ref3" href="#note3"><sup>3</sup></a>. Even as consciousness fades, the technique carved into the body does not disappear. <em>Sotsui</em> is not letting go of technique; it is a state that appears, without passing through consciousness, once technique has sunk into the body.</p>
+<p>In traditional calligraphy, <em>sotsui</em> has been grasped as the brushwork that appears on paper. The writer’s body has receded into a mere means of leaving the strokes; what remains, and what is judged, is the line on the page.</p>
+<h3>1-2. The Lineage of <em>Sotsui</em> in the History of Calligraphy</h3>
+<p>The concept of <em>sotsui</em> has been questioned again and again in the history of calligraphy. How <em>sotsui</em> is understood differs from one writer to another; here, a few lineages closely related to this practice are traced.</p>
+<p>In the calligraphy of Wang Xizhi, <em>sotsui</em> appears as the integration of technique and sensation. Though premised on the maxim that “the intention precedes the brush,” his writing, in the end, goes beyond consciousness and becomes inseparable from the state of the body. <em>Sotsui</em> here is a natural flow that appears beyond mastery.</p>
+<p>Yan Zhenqing’s <em>Draft of a Requiem to My Nephew</em> shows another side of <em>sotsui</em>. Written in mourning for his nephew’s death, this draft is full of deletions and rewritings, and the brushwork grows disordered as his emotion rises. Yet it is precisely this that later generations have valued, as a trace in which an inner state appeared directly on the paper. <em>Sotsui</em> here is not the control of emotion, but its presence.</p>
+<p>In the wild cursive of Huaisu, the speed and release of the body become the heart of <em>sotsui</em>. The brushwork of his <em>Autobiography</em> in particular is light and freely turning, and its movement, rich in linked strokes, is itself the expression. Intoxication with wine also served as a means of setting the body free. Technique is fully internalized in the body, and the writing emerges in a state beyond control by intention.</p>
+<p>In the calligraphy of Ryōkan, <em>sotsui</em> appears as no-mind and natural flow. Ryōkan studied the Chinese and Japanese classics deeply, yet that learning eventually ceased to show, arriving at an unforced, artless brushwork. He did not discard technique. What he had cultivated sank below consciousness, and the very posture of trying to write disappeared. <em>Sotsui</em> here is the innocence that appears at the far end of mastery.</p>
+<p>Whereas each of these forms of <em>sotsui</em> arose of itself at the far end of mastery, the <em>sotsui</em> of Inoue Yūichi differs in character, in that he tried to call it forth. In his non-character works, Yūichi stirred himself up with poems of his own, driving himself into a state of absorption beyond consciousness<a class="noteref" id="ref4" href="#note4"><sup>4</sup></a>. <em>Sotsui</em> is not only something one arrives at naturally; it can also be deliberately summoned — Yūichi’s practice can be read as one example.</p>
+<p>What these lineages share is that <em>sotsui</em> appears not as “the abandonment of technique” but as “a state beyond technique.” And the way it appears differs in each case. Yet when later generations have grasped these forms of <em>sotsui</em>, their chief clue has been the brushwork left on paper.</p>
+<p>This practice can be placed as one attempt to extend this <em>sotsui</em> into body, time, and space.</p>
+<h2 id="sec-02">2. The Structure of This Practice</h2>
+<p>This chapter shows what structure this practice has. The key is a choice: to make “time,” rather than “the trace,” the work.</p>
+<p>This practice is a performance that extends the concept of <em>sotsui</em> into the body and into space. Writing with the brush is positioned as one part of bodily movement, inseparable from center of gravity, breath, and relation to the space.</p>
+<p>This practice is not fixed choreography. Though it has structure, it is generated improvisationally in each moment.</p>
+<p>Traditional calligraphy takes the brush trace left on paper as the work. This practice, by contrast, takes as the work the time that the writing body passes through. This does not mean that traditional calligraphy lacks time. Traditional calligraphy, too, holds time within it: stroke order, speed, breath, rhythm. But in the place of viewing, that time is folded into the trace. If there is a divergence, it lies here: whether time is offered folded into the trace, or disclosed as a process under way. This practice stands on the latter side. The time taken as the work here includes not only the trace but the change of the body itself during writing.</p>
+<p>The trace left on paper may be one of the marks left after that time has passed, but it is not where the expression arrives. Expression is generated in a duration — the body, swaying, touches the outside world, holds its heat within, and writes. This duration itself is what appears as calligraphy.</p>
+<h2 id="sec-03">3. Tuning Emotion and Sensation</h2>
+<p>This chapter unfolds tuning, the core of this practice, from the felt sense of the act of <a class="termref" href="#term-kaku"><em>kaku</em></a>.</p>
+<h3>3-1. <em>Kaku</em></h3>
+<p>For the author, writing is friction.</p>
+<p>Just as calligraphy originated in the carving of characters, to write is not to add something, but to chip something away. Ishikawa Kyūyō understood the expressive act of <em>kaku</em> as a single root act — to chip, to scratch, to write, to draw. Working on an object with a tool, transforming nature by subtraction: that is <em>kaku</em><a class="noteref" id="ref5" href="#note5"><sup>5</sup></a>. Calligraphy, too, belongs to this lineage of <em>kaku</em>.</p>
+<p>Subtraction means not leaving the object unharmed. Scratching and chipping change the object being written on — paper or anything else — irreversibly. An object once touched never returns to how it was before. To write is to inflict this irrevocable change on the object, and the author puts the brush in while taking on that irreversibility. Writing is friction because this contact with the object always leaves a mark that cannot be erased.</p>
+<p>Unlike methods that paint over and correct layer upon layer, calligraphy is fundamentally written in a single pass. In that singularity, calligraphy appears as an act of ceaselessly chipping something away. And this irrevocable singularity creates a place where one cannot escape responsibility for changing the object — the ground from which a state beyond technique, <em>sotsui</em>, is born.</p>
+<h3>3-2. Writing in the Air and the <em>Hisshoku</em> That Does Not Stay</h3>
+<p>This sense extends to writing in the air during performance. Holding neither brush nor paper, the author writes characters in the air with her fingertips. She writes with bare hands, without an instrument, because when the skin touches the air directly, the friction with the air can be felt more vividly. To onlookers it may look like dancing. For the author, it is unmistakably an act of writing.</p>
+<p>Ishikawa understood the process by which a writing instrument touches the paper, leaves a trace, and lifts away as <a class="termref" href="#term-hisshoku"><em>hisshoku</em></a>. In it, 〈触〉, touch as the feel of friction, and 〈蝕〉, erosion as the fixed trace, are united.</p>
+<p>In writing in the air, both of these moments are transformed. Having no support such as paper, 〈蝕〉 does not stay as it does on paper. It lingers faintly in the air, disperses, and vanishes. 〈触〉, too, arises not as physical friction but as an image within the body that is trying to write.</p>
+<p>Writing in the air, then, does not negate the <em>hisshoku</em> Kyūyō found on paper. It is a writing that carries it over into the dimension of the image and takes it on as an erosion that does not stay. Here, the fact that what is written does not remain does not mean that writing has failed. It is another appearance of <em>hisshoku</em>, extended into air and body.</p>
+<h3>3-3. Improvisation and Tuning</h3>
+<p>In this practice, chipping away appears as improvisation. Because it is improvised, sensation and emotion ride directly on it. What cannot enter a planned act appears in the moment of chipping. The singularity that allows no rewriting leaves the state of the body directly as a trace. This is, for the author, the ground on which <em>sotsui</em> becomes possible.</p>
+<p>Improvised writing, however, is not a disordered outburst without concept. What supports improvisation in this practice is a state tuned by a concept. The concept works as a scaffold for tuning.</p>
+<p>What, then, is tuning? It is not for stabilizing one’s inner state. On contact with the outside world, emotion wavers and is thrown into disorder. Tuning is a process that continues while containing that wavering. It is not a settled state, but the very state of continually changing while continually breaking.</p>
+<p>This practice was at first carried out as a composed form of expression based on choreography. It was not, however, the mere reproduction of a form; it functioned as training to bring sensation and writing into accord. Through this accumulation, tuning was internalized in the body, and an improvisational practice independent of choreography became possible. Improvisation, therefore, is not the abandonment of control. It arises in the process in which, with the concept as its ground, the lead in writing passes away from intention and control to the state of the body.</p>
+<p>This becomes clearer in how calligraphy treats <a class="termref" href="#term-sakui"><em>sakui</em></a> — deliberately contriving form. Ueda Sōkyū taught that, in order to express emotion while keeping purity, one should not throw <em>sakui</em> away but reach, through mastery, the stage at which “<em>sakui</em> no longer appears as <em>sakui</em>”<a class="noteref" id="ref6" href="#note6"><sup>6</sup></a>. When, in mastery, <em>sakui</em> no longer rises to consciousness, purity is not disturbed. This resonates with this essay’s understanding of <em>sotsui</em>: cultivated technique sinking below consciousness and no longer appearing as contrivance.</p>
+<p>In the author’s performance, however, <em>sakui</em> is never brought to the foreground in the first place. Emotion is expressed not by letting <em>sakui</em> blur through mastery, but in the tuned manner of writing itself. If Sōkyū reached purity by sinking <em>sakui</em> into mastery, this practice keeps purity through tuning, without passing through <em>sakui</em>. Both seek purity; one sinks <em>sakui</em>, the other does not entrust the generation of writing to <em>sakui</em> at all. As will be discussed below, this difference also overlaps with the divergence between presenting the time of calligraphy folded into the trace and disclosing it as the process of a writing body.</p>
+<h3>3-4. Time as <em>Wadachi</em></h3>
+<p>Chipping away produces friction, and friction leaves a trace. The author calls what remains after this movement of friction has passed <a class="termref" href="#term-wadachi"><em>wadachi</em></a>, a rut. But what is essential in <em>wadachi</em> is not the trace left behind. It is the continuity of a movement: the fact that a body passed there. <em>Wadachi</em> is not a finished form, but nothing other than the appearance of the time that body and senses have travelled.</p>
+<p>From this viewpoint, process and result are not separated. Rather, the process itself appears as the work. Showing the process in this practice is therefore not a matter of staging, but a necessary mode of being, true to the essence of calligraphy.</p>
+<p>This view of calligraphy as a movement of friction connects with Ishikawa Kyūyō’s theory of <em>hisshoku</em>, and then parts from it. As noted above, Ishikawa understood the process arising in the contact of brush and paper as <em>hisshoku</em>. He located the essence of <em>hisshoku</em>, however, in the trace fixed and left on the paper — 〈蝕〉 — and distinguished the movement of the writing body itself from the essence of calligraphy.</p>
+<p>This practice, by contrast, takes up the same process of <em>hisshoku</em> again, not on the side of the trace that remains, but on the side of the time the body passes through. The divergence in how time is presented, described in Chapter 2, is drawn here within <em>hisshoku</em> itself. <em>Wadachi</em> in this practice therefore need not remain on paper. It includes what vanishes, like writing in the air. What makes calligraphy calligraphy is not that a trace remains, but the continuity of the movement itself: that a body passed there, chipping away.</p>
+<h3>3-5. The Degree of Condensation in Line and Word</h3>
+<p>In relation to avant-garde calligraphy, this practice does not present lines or bodily movements freed from the meaning of characters as finished works. Rather, the avant-garde line is positioned as a trace of the wavering that precedes condensation into words — one phase in the generative process that leads to words. This practice thus does not simply inherit avant-garde calligraphy; it attempts to relocate the avant-garde line within the time of performance.</p>
+<p>What becomes important here is the “degree of condensation.” The degree of condensation, however, is not the extent of an operation that compresses a line and arranges it into a character. It is a density: how far what overflows as expression has already congealed. Whether something appears as a line or as a character is nothing other than the appearance of that density. The same wavering appears as a line if it stays diffuse, and as words if it is condensed into a single point. The avant-garde line and the character, then, are not severed from each other; they appear as different phases according to how far the same wavering is condensed. Moreover, this gathering is not a one-time end point. In the course of writing, the wavering wells up again, collapses, and is condensed anew. This repetition shows that the cycle of collapse and reconstruction in <a class="termref" href="#term-torine"><em>torine</em></a><a class="noteref" id="ref7" href="#note7"><sup>7</sup></a> also occurs, nested, within the act of writing.</p>
+<p>From this viewpoint, the divergence from Inoue Yūichi also becomes clear. Yūichi is said to have reached an impasse with non-character calligraphy, feeling that “the more I write, the more hollow it becomes — nothing congeals,” and to have returned to characters<a class="noteref" id="ref8" href="#note8"><sup>8</sup></a>. For Yūichi, then, non-character writing was “what does not congeal.” Applying the axis of condensation, we may think that Yūichi, having placed condensation — gathering into characters — at the end point of expression, rejected the non-character as what fails to congeal. This practice, by contrast, takes on the phase of low condensation — the line that appears while staying diffuse — not as a failure to be excluded from expression, but as one phase. Since <em>torine</em> works by passing through diffusion before moving toward the core, the phase of diffusion itself has intensity<a class="noteref" id="ref9" href="#note9"><sup>9</sup></a>.</p>
+<p>That is, where Yūichi rejected the same non-character line as “what does not congeal,” this practice makes use of it as “the phase one does not let congeal.” In moments of outburst that need not be condensed into characters at once — a scream, an impulse, pent-up resentment — no vessel of characters is needed; the line is enough. On the other hand, even something impulsive may condense into characters when it turns toward self-recognition or naming. It is therefore more accurate not to fix “impulse = non-character,” but to say that “in a phase of low condensation, the vessel of characters is no longer needed.”</p>
+<p>The condensation of wavering and the condensation of intent are also continuous. The outward condensation that moves toward paper and characters, and the inward condensation that takes on what is carved into the skin, can be thought of not as separate phenomena, but as the same degree of condensation appearing in different directions. This also corresponds to the structure of “one and the same gap” in this essay, shown in 4-3: in the phase of dissolution, the subject cannot fully coincide with the outside at its boundary; in the phase of doubling, the subject cannot fully coincide with itself.</p>
+<p>This practice does not present results as finished flat works. It discloses to the audience the very process in which a line rises, condenses into characters, collapses again, and condenses once more. The difference between non-character calligraphy and writing words, therefore, is not classified by the form of the result; it arises from what degree of condensation the wavering takes within one and the same body. What matters in this practice is to grasp the question of what to write not as a matter of predetermined textual content, but as a matter of the generative process: when a line needs characters, and when it does not.</p>
+<h3>3-6. Sustained Tuning and the Movement of Writing On</h3>
+<p>When writing is understood in this way as an “act of chipping away,” the core of this practice appears as the tuning of emotion and sensation.</p>
+<p>By keeping awareness of the inside and contact with the outside world at the same time, the precision of sensation rises. As a result, center of gravity and breath change, and the movement of the brush transforms accordingly.</p>
+<p>Tuning begins before the brush is taken up, and continues unbroken during writing. Even in time that seems, at a glance, not to be writing, the body is already changing its state toward the next writing. Writing, by contrast, occurs as a movement of chipping away within this sustained tuning. Each character and line has an irrevocable singularity, yet they are not isolated instants; they belong to the duration of the movement of writing on. Ceaselessly sustained tuning holds and keeps supporting the movement of writing on.</p>
+<p>In the process by which expression rises from experience, a movement of drawing out a core from a tangle of impressions is repeated. This essay calls this movement <em>torine</em>. Its detailed structure is shown in the next chapter.</p>
+<h2 id="sec-04">4. The Extension of <em>Sotsui</em></h2>
+<p>This chapter discusses how <em>sotsui</em> is extended, from three sides: from the written work to the writer’s body (4-1), the temporal structure that supports it (4-2), and where the subject is within it (4-3). The question of “where the subject is,” treated in 4-3, is distinct from the question of “which phase the time of writing is in,” treated in the next chapter. How the two overlap is drawn together in Chapter 6.</p>
+<h3>4-1. From the Written Work to the Writer’s Body</h3>
+<p><em>Sotsui</em> has always appeared within the duration of writing on. Yet until now it has been judged only by the writing left on paper. This practice positions this as “the extension of <em>sotsui</em>,” extending the place where <em>sotsui</em> appears from the paper to the writer’s body, time, and space.</p>
+<p>This extension of <em>sotsui</em> connects with the grasp of time in calligraphy that avant-garde calligraphy arrived at. Morita Shiryū understood calligraphy as “a single movement as a whole, moving through a certain length of time with living breath and rise and fall”<a class="noteref" id="ref10" href="#note10"><sup>10</sup></a>. For Shiryū, time and space are one and simultaneous, and calligraphy is established as the duration of a single, unrepeatable movement. This essay, too, shares this understanding that calligraphy inherently contains time.</p>
+<p>Until now, however, that time has been folded into the trace left on paper, and viewers have read back from the trace to the writer’s movement and bodily change. This practice, by contrast, offers the center of gravity, breath, wavering, and contact with the outside world of the writing body to the audience, at the same time as the writing. The extension of <em>sotsui</em> is not a lengthening of the time of calligraphy. It is the disclosure of that duration — which has until now been read from the trace on paper — as a process generated with the writer’s whole body.</p>
+<p>Among the improvised calligraphy performances the author has encountered, many focus on external synchrony or visual performativity. What characterizes this practice, by contrast, is that it continuously exposes inwardly isolated emotion.</p>
+<h3>4-2. The Temporal Structure Supporting <em>Sotsui</em></h3>
+<p>In 4-1, the place where <em>sotsui</em> appears was extended to the writer’s body, time, and space. This section digs into the structure of time among these.</p>
+<p>Experience is not converted into expression immediately afterward. It is digested in the body over a certain length of time. A period of waiting is needed before a core rises from the tangle of impressions. This back-and-forth movement toward the core — touching, slipping, adjusting, touching again — is what this essay calls <em>torine</em>. <em>Torine</em> means, literally, taking the root: drawing the root of an experience out into a single core.</p>
+<p>The core drawn out is held, in making, as a keyword. Having a keyword becomes a scaffold for tuning. However the situation in performance changes, the performer can improvise words derived from this core. <em>Torine</em> is thus both the movement of drawing a core out of experience beforehand, and the movement of writing while deriving words from that core during performance. Writing itself appears as the continuation of <em>torine</em>.</p>
+<p><em>Torine</em> occurs on several time scales: the digestion of experience over days; the adjustment of sensation over minutes in rehearsal; judgments over seconds during performance; and the faint wavering within a single stroke of the brush. The scales differ, but the structure of the movement — contact with the core — does not change.</p>
+<h3>4-3. Where the Subject Is in <em>Sotsui</em></h3>
+<p><em>Sotsui</em> is not simply a shortening of the cycle of <em>torine</em>. It is a state in which the repetition of wavering, collapse, and reconstruction occurs with almost no interval. A brushstroke that looks smooth at a glance is experienced, inwardly, as a continuous repetition of collapse and reconstruction.</p>
+<p>And when this repetition becomes dense to the limit, the whereabouts of the subject generating the movement gradually begins to waver. Eventually it passes into a state that cannot be clearly located. Is the author touching, or being touched? Adjusting, or being caught up in the phenomenon? It is at the point where this becomes hard to tell that <em>sotsui</em> appears most deeply.</p>
+<p>This state connects with the condition spoken of in the history of calligraphy as “no-mind” or “self-forgetting.” This practice, however, does not treat it as a mystical state. It positions it as a necessary consequence of temporal structure. The retreat of the subject is not a destination, but a phenomenal consequence brought about by the acceleration of <em>torine</em>.</p>
+<p>This retreat of the subject connects with the bodily experience Merleau-Ponty described as “flesh” (<em>chair</em>). Merleau-Ponty attended to the experience in which, when my right hand touches my left, the touching hand can at some point reverse into a touched hand. The sensing body is at the same time something sensed. The dimension of sensible being common to body and world, which makes this reversal possible, he called “flesh.” The point described above, where it becomes hard to tell whether one is touching or being touched, is the moment at which this reversibility of the flesh appears as the experience of writing.</p>
+<p>This reversal, however, does not reach complete self-grasp. Merleau-Ponty describes the body’s touching itself and seeing itself as the body’s quasi-“reflective” redoubling. He writes that “I never fully succeed in touching myself touching, in seeing myself seeing,” and that this remains “a kind of imminence”<a class="noteref" id="ref11" href="#note11"><sup>11</sup></a>. The reversal is always incomplete, and leaves a slight gap. The two phases this essay discusses below both unfold from this gap.</p>
+<p>The generative event that Ishikawa Kyūyō’s theory of <em>hisshoku</em> found at the contact surface of brush and paper is grasped anew in this practice as this reversal, and further extended along the axis of time.</p>
+<p>What has been described so far is the subject wavering at its boundary with the outside, nearly swallowed by the phenomenon, and retreating. This essay calls this the “phase of dissolution” of the flesh. But the flesh in this practice does not appear only in the direction of dissolution. In the author’s practice there is another phase that forms a pair with it: the “phase of doubling.”</p>
+<p>It appears when the author writes on her own body. When she carves characters into her own skin with ink or paint, the writing hand and the written skin are both her own body. Here too the reversal of touching subject and touched object occurs. But the experience appears not as a retreat of the subject, but rather as its doubling. The will to write and the readiness to take on being written rise together in one and the same body.</p>
+<p>The two, however, cannot be grasped at once. Lean toward writing, and the sense of being written recedes. Sink toward being written, and the writing hand grows distant. Doubling is a state in which the two go back and forth without ever fully coinciding.</p>
+<p>And this back-and-forth is not necessarily equal. In the author’s practice, the will to write stands in the foreground. At the same time, when the will to write with intent rises, an awareness that seeks to take on the bodily sense of being written also stirs in the background.</p>
+<p>Especially when carving characters into the skin, the friction appears differently from the friction of release in writing on paper: as the feel of carving self-awareness and intent into the body. The written body receives the friction while already trying to take on that intent, and through that friction it receives the intent within it into the body once more. In consciousness, it has already begun to take it on. In the body, after the friction, it takes it on again. Because of this double time, sensation goes back and forth between the writing side and the written side.</p>
+<p>Doubling in this practice is therefore grasped as a reversal that, while grounded in the reversal of touching and touched in Merleau-Ponty’s flesh, is made asymmetrical by the center of gravity of the act of writing.</p>
+<p>This phase of doubling is a state in which two subjects keep going back and forth, preserving the gap of the reversal described above. Where the phase of dissolution makes the subject retreat, the phase of doubling does not erase the subject. It holds the subject in the position of taking on the reversal.</p>
+<p><em>Sotsui</em> in this practice therefore appears as a state of going back and forth between two phases: between the moment in which the subject melts and is swallowed by the phenomenon, and the moment in which the doubled subject takes on the reversal.</p>
+<h2 id="sec-05">5. Scenes: The Four Phases of <em>Torine</em></h2>
+<p>This chapter surveys how the structure of “the extension of <em>sotsui</em>” and of <em>torine</em>, described so far, appeared in concrete works. Here it only describes what happened in each scene; their meaning, theoretical connections, and ethical position are drawn together in Chapter 6.</p>
+<p>The four scenes below are different moments from different works. Yet each can be reread as a different phase of <em>torine</em>: sinking, reconstruction, disturbance, and infiltration. These phases capture which phase the time of writing is in, and form an axis distinct from dissolution and doubling — where the subject is — described in 4-3.</p>
+<h3>(1) <em>Akazukin</em> — The Phase of Sinking</h3>
+<p><a class="termref" href="#work-akazukin"><em>Akazukin</em></a> (Little Grime Hood; October 2025, Hakozaki Aquarium Café Room) was performed with improvised music, on a stage of two 910 × 1820 mm panels — black and red corrugated plastic boards with paper attached. Besides ink, the performer used red and gold paint, writing not only with the brush but also with bare hands.</p>
+<p>The writing began with a quotation from Charles Perrault’s <em>Little Red Riding Hood</em>, moved through words about sexuality, and on to words of self-acknowledgment. Near the end, the performer wiped the characters carved on the panels with a red hood costume, then put the costume on. The characters did not remain on the panels in orderly form; wiped, they stretched and became a broken trace.</p>
+<p>What pours out emotion is less the splashing of ink than the intensity of the body’s movement. Not moving toward the outside of a relationship, but burrowing into one’s own inside and laying bare what is there — this moment can be read as the phase of sinking in <em>torine</em>. The concrete content of this exposure and its ethical position, as well as the meaning of putting on the costume, are discussed in detail in Chapter 6.</p>
+<h3>(2) <em>Kintsugi</em> — The Phase of Reconstruction</h3>
+<p>The stage of this work (August 2022, IAF SHOP*, OGA calligraphy exhibition <a class="termref" href="#work-kintsugi"><em>Kintsugi</em></a>) was a space with all four walls, the floor, and the ceiling filled with characters. In one corner stood a transparent, tank-like panel large enough for two people. The performer appeared in a white dress and a mask fitted with a snorkel.</p>
+<p>The work unfolds roughly as follows. First, seated in a chair and looking into a hand mirror, the performer writes “a mass of contradictions” on the mask with a small brush, as if applying makeup. She then writes “society and language → perception → common sense and ethics” on a blackboard in chalk, presenting the chain in the form of a lesson. Soon the writing on the blackboard breaks down, and the performer scrawls on the floor, writhing in agony.</p>
+<p>Next, she smears a sludge-like substance filling the tank — a slime-like mass — onto her own body and enters the tank. With a co-performer playing the sludge, she applies the substance to the other and is applied to, writes characters on the other’s body, and becomes entangled. Through a three-stage shift — struggling, embracing, soaking — the body, still holding the sludge within, appears outside once more and removes the mask.</p>
+<p>In the moment of awakening, the performer, in the dress heavy with sludge, rampages and writes on the walls in red paint. Finally, in yellow paint, the single character 継 (<em>tsugu</em>, “to join”) is written, large and quiet, as if biting down on it.</p>
+<p>From blackboard to tank, sludge, the removal of the mask, eruption, and then 継. This sequence of shifts is a process of rising again while holding what has sunk, letting it erupt outward, and putting it back together. In other words, it shows the phase of reconstruction in <em>torine</em>. The meaning and theoretical analysis of each scene are left to Chapter 6.</p>
+<h3>(3) <em>Tomatoes at Knockdown Prices</em> — The Phase of Disturbance</h3>
+<p>In <a class="termref" href="#work-tomatoes"><em>Tomatoes at Knockdown Prices</em></a> (March 2025, Fukuoka Asian Art Museum, graduate exhibition of Fukuoka University of Education), paper was put up on three walls and the floor, and the author kept writing for three days. At the entrance were placed a sign reading “This is a place where you may write freely” and crayons, and visitors too could enter the space and write freely. What visitors left included confessions of sexual orientation and words from within that are hard to share in society.</p>
+<p>The space was continually generated by three days of accumulated writing. The author began from poems and, as her sensation turned inward, moved into improvised writing. In the performance on the third day, she held a dialogue in crayon with visitors and wrote on the walls with the brush the state born from that dialogue. Through contact with visitors who carried sharp words, the author’s inner state was shaken again and again.</p>
+<p>Contact with visitors disturbs the tuning, and the words she had anticipated stop working — this moment can be read as the phase of disturbance in <em>torine</em>. The structure by which this disturbance turns into improvised generation is discussed in detail in Chapter 6.</p>
+<h3>(4) <em>The Mermaid Conditioning Program</em> — The Phase of Infiltration</h3>
+<p><a class="termref" href="#work-mermaid"><em>The Mermaid Conditioning Program</em></a> (July 2026, Hakozaki Aquarium Café Room) was performed as a play with Vladimir Ōya, responsible for script, acting, and voice, together with the improvising musicians prima materia. The stage was a space of 4800 × 4500 mm with a ceiling height of 2480 mm, with three freestanding 800 × 1820 mm panels set side by side. The performer played the mermaid, using dance and voice in addition to writing.</p>
+<p>The story begins with a mermaid made by a mad scientist, who escapes to the sea, gains legs and drowns, is raped by the fisherman who saved her, and loses her reason for being. At his urging, the mermaid works in a sex establishment, and in time falls in love with one customer who was kind to her. Hearing that he is getting married, she attacks him and turns into a monster. At the close, the mermaid sings, “What do we live for?”</p>
+<p>In this work, writing rises from movements before writing unfolded as dance. Through dance, the performer searched the inside of her body and drew out from it the impulse to write.</p>
+<p>In the scene at the sex establishment, the performer first wrote on paper, “Dear customer, please write on me — your desire, your pain,” and showed it to the audience. Next, a co-performer wrote on the performer’s body; then, casting the audience as customers, she bowed to each person in turn, handed them the brush, and had them write on her body. With provocative looks, smiles, and sensual movements, the performer drew the audience in, and the room was gradually swallowed by that atmosphere. Some audience members wrote on her face from the start, and the last one, without a brush, plunged a bare hand into the bucket of paint and wrote on the performer’s body.</p>
+<p>The violence drawn out of the audience was carved into the performer’s body and seeped straight inward. Enduring whatever is done, accepting it, numbed to pain, growing sick without knowing — this state, conceived as the mermaid’s inner life, rose within the performer as something real, beyond the level of acting. It came to drive, from the inside, the scenes that followed: love for a customer, dependence, and murder. What comes from outside seeps into the body and changes the inner life itself — this moment can be read as the phase of infiltration in <em>torine</em>. The design of audience participation and its contrast with <em>Tomatoes at Knockdown Prices</em> are discussed in detail in Chapter 6.</p>
+<p>The four scenes above were each drawn out as one example that shows a phase of <em>torine</em> most clearly. These phases do not, however, correspond exclusively to each work. In fact, in every performance several phases — sinking, reconstruction, disturbance, and infiltration — are mixed, shifting into one another as they appear. The one-to-one correspondence in this chapter is a convenient extraction for seeing the structure. The next chapter examines, as a whole, how these phases overlap within a single practice.</p>
+<h2 id="sec-06">6. Discussion</h2>
+<p>This chapter draws the four scenes shown in the previous chapter together, not as analyses of individual works, but as a structure running through this practice.</p>
+<p>Sinking in <em>Akazukin</em>, reconstruction in <em>Kintsugi</em>, disturbance in <em>Tomatoes at Knockdown Prices</em>, and infiltration in <em>The Mermaid Conditioning Program</em>. Each is a different phase in which “a bodily state that keeps changing within relationship” appears. They are not fixed stages. They repeat within each practice and arise as they shift into one another. The duration itself of this bodily state, continually changing within relationship, is the heart of this practice.</p>
+<p>All four phases arise as the body comes into contact with others, materials, gazes, and words. This essay therefore grasps anew the structure by which the boundary between subject and object wavers in this contact, through the two phases of the flesh shown in 4-3.</p>
+<h3>6-1. A Synthesis through the Two Phases of the Flesh</h3>
+<p>The structure running through the four moments can be grasped anew as the two phases of the “flesh” shown in 4-3: dissolution and doubling. In this practice, the reversals that arise in relation to others, materials, and the gaze of the audience can each be read as one of these two phases, or as a going back and forth between them.</p>
+<p>Reversal in this practice is not gathered into the body of a single other. It arises dispersed in many places. When gazes are exchanged with the audience, there is the reversal of seeing and being seen. When the performer entangles her body with a co-performer, when they apply materials to each other, or write characters on each other’s bodies, there is the reversal of touching and being touched, of writing and being written. All of these are moments in which the boundary between subject and object wavers within relationship, and belong to the phase of dissolution.</p>
+<p>When the author writes on her own body, by contrast, the reversal is folded into a single body. The subject does not melt; it doubles. In this moment, where the will to write and the readiness to be written go back and forth without fully coinciding, the subject stays in the position of taking on the reversal.</p>
+<p>The “readiness to be written” in this doubling is not completed in the instant of writing. It means taking on the words carved into oneself not as a temporary trace, but as something that will remain in the body from then on. That is, it is a readiness that continues into the future: not only in the instant of being written, but to go on living with the carved words. Here the reversal of the flesh is extended from a structure of momentary perception into the time of life itself. The operation this essay has attempted throughout — extending <em>sotsui</em> from the writing that appears on paper to expression with the writer’s whole body — is applied in the same form to the concept of flesh as well.</p>
+<p>The asymmetry this essay has found through the two phases shares a field of questions with contemporary performance theory. In <em>The Transformative Power of Performance</em>, Erika Fischer-Lichte draws on Merleau-Ponty’s “flesh” in discussing contemporary bodily performance, and understands the relation between the sensible and the non-sensible as something that can be reduced neither to dualism nor to monism, and that is necessarily asymmetrical<a class="noteref" id="ref12" href="#note12"><sup>12</sup></a>. The asymmetry this essay found in the phase of doubling starts from the same insight. But what Fischer-Lichte discussed with regard to an other — the actor’s body — this essay folds into the practice of writing on one’s own skin: into the asymmetry between the will to write and the readiness to be written. The reversal of the flesh appears as an asymmetrical back-and-forth not only at the boundary with others, but also when a single body carves into itself.</p>
+<p>The flesh in this practice, therefore, cannot be reduced to an experience in which the boundary between body and world simply dissolves. In the phase of dissolution, the subject cannot fully coincide with the outside at its boundary. In the phase of doubling, the subject cannot fully coincide with itself. The two are not separate phenomena; they are one and the same gap, appearing as it turns outward or inward.</p>
+<h3>6-2. The Gaze as Contact</h3>
+<p>The reversibility of the flesh described in 4-3 arises not only between the touching hand and the touched hand. It also arises between seeing and being seen. Merleau-Ponty described the seeing look itself as a kind of contact that traces and envelops visible things, and as an experience in which seeing reverses into seeing oneself<a class="noteref" id="ref13" href="#note13"><sup>13</sup></a>. The author takes up this structure in her relationship with the audience. Standing under the audience’s gaze, she feels both seen and touched by that gaze. The gaze arrives as a contact while keeping the physical distance from the seats. And it draws performer and audience into a single place.</p>
+<p>When the author stands before an audience, the gaze is often experienced as pain — or as something like electricity running over the skin. This pain, however, does not belong to the gaze itself. Nor does it belong only to the performer’s state. The audience’s gaze arrives carrying desire, evaluation, curiosity, and expectation. At the same time, the author, for her part, is pushing out into writing what has settled within her, digested and condensed. Pain arises where these two are inextricably mixed: what the audience’s gaze carries, and the body that offers condensed inner matter to the outside. Where does the audience’s intrusion end, and her own readiness for battle begin? In the midst of pain, that boundary cannot be told.</p>
+<p>This indistinguishability is not a lack. It is the very appearance of the phase of dissolution, in which the subject cannot fully coincide with the outside at its boundary. In the contact of the gaze, is the author being touched? Or is she offering herself? She cannot decide. In the place of performance, the reversal of seeing and being seen transforms into this pain whose belonging cannot be decided. The phase of dissolution, in other words, appears not only in contact with others and materials, but in the most distant contact of all: the gaze of the audience.</p>
+<p>In the phase of dissolution, the subject is nearly swallowed by the phenomenon; in the phase of doubling, the subject takes on that reversal. This going back and forth supports the stance running through this practice: not excluding inner chaos, but holding it while reconnecting with the outside. Neither swallowed nor excluding, continuing while taking on the reversal — that is the bodily structure running through all four works in this practice, which offers <em>sotsui</em> with the whole body.</p>
+<p>What is asked of the audience, therefore, is not to decode the meaning of written characters. It is to be present for a time in which body, material, and words keep changing. To be present is nothing other than to feel, with the body, the changing state itself.</p>
+<p>In this respect, this practice invites a shift from viewing to experience.</p>
+<h3>6-3. Reconnecting with the Outside While Holding the Inner</h3>
+<h4><em>Akazukin</em> — Wearing the Words That Were Exposed</h4>
+<p>What was exposed in <em>Akazukin</em> were isolated desires and conflicts surrounding “a woman’s sexuality,” which are hard to share in society: the fear of defloration, the accumulation of grime from being handled, sexual desire entangled with the need for approval, and self-interrogation about one’s own capacity to harm. These were laid bare in performance with improvised music.</p>
+<p>The movement of the brush, the tension and wavering of the body, and the splashing of ink function as means of externalizing the author’s inner impulses in time and space. Here sensation and movement become one, and <em>sotsui</em> unfolds continuously in a state in which technique has been internalized in the body.</p>
+<p>The rawness that appears there — cold, yet clinging — is the presence of the author’s inwardly isolated emotion itself. It embodies, as action, the root desires “to be understood” and “to be accepted.” At the same time, it is an act that includes the loneliness of being exposed without being understood.</p>
+<p>This exposure does not impose particular values on others. It is the author’s attempt to acknowledge and forgive her own nature. And for those who watch, it becomes an occasion to ask again about ways of being that include the “possibly dirty parts” of themselves and others.</p>
+<p>At the end of this work, the exposure reaches a decisive turn. After fiercely writing words of self-acknowledgment, the performer wipes the characters carved on the panels with the red hood costume, then puts the costume on. The characters do not remain on the panels in orderly form; wiped, they stretch and become a broken trace.</p>
+<p>What matters here is not that the written words are preserved on paper. It is that they are transferred onto a costume worn on the body. The written words do not remain on an external object; they are taken on by the performer’s own body. This is the moment in which the phase of doubling shown in 4-3 — a state in which the will to write and the readiness to be written go back and forth without fully coinciding — becomes concrete through the act of putting on a costume. To wear the words of self-acknowledgment is nothing other than to take them on not as a temporary trace, but as something that will remain in the body from then on.</p>
+<h4><em>Kintsugi</em> — Returning to Society While Holding the Sludge</h4>
+<p>The writing on the blackboard in <em>Kintsugi</em> — “society and language → perception → common sense and ethics” — is a scene that presents the social theme of the work in advance. Society and language are received through perception, a working of the body. Through that perception, common sense and ethics seep into the body.</p>
+<p>It is no accident that this scene takes the form of a lesson. For the author, expression through calligraphy and education are two halves of a single endeavor, directing the same intensity in different directions. This blackboard writing is a moment that shows, in reverse, through the gestures of the one who teaches, the structure of education: how the author herself has perceived society and language, and how common sense and ethics have been internalized in her body. The structure presented here — “social norms seep into the body through perception” — will reappear later as the words “property of society.”</p>
+<p>In the fourth scene of <em>Kintsugi</em>, the performer places her body in the closed space of the tank and comes into contact with the sludge-like substance. Bodily contact with an improvising dancer arises, unfolding in the flow of struggling, embracing, and soaking.</p>
+<p>The space in this scene functions as a closed inner space. The sludge appears as a substance with the qualities of flowing, clinging, and blurring boundaries. The other is not an opposing presence, but one to mix with. The body changes from resistance to acceptance, and in that process the boundary itself collapses.</p>
+<p>What comes first is struggle as rejection. Into it comes the contact of an embrace, and finally a shift into the still acceptance of soaking. These three stages are not fixed as staging. They are a process in which the change of inner state appeared directly through the body.</p>
+<p>What matters here is that the sludge functions not as something to be excluded, but as a medium that reconstructs the body. To sink into inner chaos is not collapse. It is a process of reconnecting the self.</p>
+<p>In this scene, no writing with the brush is done. This contact — mixing with the sludge, clinging to it, being reshaped by it — is not writing in itself; it works as tuning toward the next writing. The feel of turbidity the body receives in the tank becomes the soil in which the words later written on the walls undergo <em>torine</em> from within. What the contact with the sludge carries here is not the replacement of writing by material, but sustaining, as a bodily state, one process of tuning continuous with the writing before and after.</p>
+<p>This process does not remain on paper. The body itself, resisting, wavering, and accepting, is positioned as expression with the writer’s whole body — as the extension of <em>sotsui</em>.</p>
+<p>Not collapse, but the process of a body reconstructed while mixing — that is the heart of the fourth scene of <em>Kintsugi</em>.</p>
+<p>The body that sank inward in the fourth scene appears outside once more in the fifth. It is not, however, a body with the sludge removed. It is, rather, a body that still holds it within. Removing the mask functions as the release of a device that had cut off relations with the outside. At the same time, it becomes the moment in which the changed body is directly connected to society. It is not a matter of “coming back clean” — the turn here is to stand in society as a changed body.</p>
+<p>When the changed body is connected to society in the fifth scene, that body already appears as a site defined by the social gaze. The sixth scene is the moment in which that definition is taken on and, at the same time, rewritten from within.</p>
+<p>In the sixth scene, the body that rose again in the fifth lets what it held erupt outward. The writing here appears not as orderly brushwork, but inseparable from the movement of the body. The writing is not composed as expression; it appears as a phenomenon released directly from the body.</p>
+<p>The words then written into the space, “property of society,” show a state in which the individual body is defined by the social gaze. At the same time, by being written directly, they function as an act that rewrites that definition from within. Holding the inner while releasing it toward the outside — that is the heart of this scene.</p>
+<p>From the fourth scene to the sixth, the body follows a continuous process of sinking inward, rising again, and erupting outward. What matters in this whole flow is that at no stage is the sludge removed; it is held throughout. The theme of this work, that is, is not to exclude inner chaos. It is to reconnect with the outside while holding it — the process itself.</p>
+<h4><em>Tomatoes at Knockdown Prices</em> — Improvisation Renewed by Disturbance</h4>
+<p>In <em>Tomatoes at Knockdown Prices</em>, this reconnection with the outside unfolds in direct contact with the audience. In a space continually generated over three days, the author moved from writing that began with poems into improvised writing as her sensation turned inward. Dialogue with visitors who carried sharp words then intervened, and the author’s inner state was shaken again and again.</p>
+<p>Here, the way Fischer-Lichte’s theory works in this work differs from the earlier works. In <em>Akazukin</em> and <em>Kintsugi</em>, and in the earlier description of the audience’s gaze, Fischer-Lichte’s theory of performance worked to give a name, afterward, to experiences that had already happened. <em>Tomatoes at Knockdown Prices</em>, by contrast, is a practice designed after reading Fischer-Lichte. The author deliberately tried out the three elements she names as conditions of performance: role reversal between performers and spectators, the formation of a community between them, and touch — between distance and closeness, public and intimate, body and gaze<a class="noteref" id="ref14" href="#note14"><sup>14</sup></a>.</p>
+<p>This design had a preliminary stage. In <em>Existence No.2</em>, the year before, the author had already tried out these three elements. There, however, the audience stayed on the side of being written on, and did not fully move into the performer’s position. Role reversal was not achieved<a class="noteref" id="ref15" href="#note15"><sup>15</sup></a>. <em>Tomatoes at Knockdown Prices</em> was designed taking on that non-achievement. It made a place where visitors were handed crayons and could move to the side of writing. It tried, this time, to bring about the time of role reversal.</p>
+<p>That role reversal is not achieved as intended is not simply a matter of the author’s individual ability. Fischer-Lichte, too, touches on cases in which spectators resist the performer’s approaches, act on their own, or leave the place<a class="noteref" id="ref16" href="#note16"><sup>16</sup></a>. Role reversal does not necessarily arise just because it is designed. Since it is open to the spectators’ response, not being achieved is also inherently part of the event of performance. From this viewpoint, the non-achievement in <em>Existence No.2</em> was not a failure, but a diagnosis that drove the next design.</p>
+<p>What matters here is that the disturbance arising from contact with the audience functioned not as an obstacle to expression, but as an occasion that kept renewing the state of body and sensation. This disturbance is not interference from outside. It is the very state generated within relationship.</p>
+<p>When contact with others made it impossible to sustain the tuning, the words she had anticipated stopped working. In that lack, words true to the state of the body arose improvisationally. Improvisation in this practice, that is, is generated not as an extension of a tuned state, but rather with its breakdown as the occasion. This structure, in which the phase of disturbance turns directly into an occasion for generation, shows that <em>torine</em> does not stay in a stable cycle, but keeps being renewed through breakdown.</p>
+<p>This means that disturbance is not a disordered accident. What the author designed was a place where the audience could intervene — a place of role reversal. But what visitors would bring into it, and how their words would break the tuning, cannot be designed. One can aim at the place; one cannot aim at what happens there. What matters is not to reduce these two to a binary of “aimed / not aimed.” Disturbance is generated on top of a designed place, beyond the design. This quality of being generated beyond control is nothing other than the heart of this work.</p>
+<p>The improvised words are not gathered back into the author; they appear and vanish only in that place. The author herself does not keep them. Writing in this practice is therefore not content to be recorded, but an event of generation that appears for a moment within relationship. Here the theme of this practice — reconnecting with the outside while holding the inner — appears as an open process in which the self keeps being renewed through contact with others.</p>
+<h4><em>The Mermaid Conditioning Program</em> — Drawn Out by a Role, Seeping into the Body</h4>
+<p>The crayon dialogue with visitors on the third day of <em>Tomatoes at Knockdown Prices</em> did not succeed in drawing out their inner lives. Asked directly about their inner selves, visitors either shrank and trembled or, conversely, turned rough; either way, they closed up in self-protection. Knocking directly on the inner self only made the door harder.</p>
+<p><em>The Mermaid Conditioning Program</em> takes on this non-achievement as a diagnosis. Just as the non-achievement of <em>Existence No.2</em> drove the design of <em>Tomatoes at Knockdown Prices</em>, the non-achievement of <em>Tomatoes at Knockdown Prices</em> drove the next design. What the author chose was not to question the audience’s inner selves, but to give the audience a role. The audience was cast as customers of a sex establishment; each was handed the brush with a bow, and wrote on the mermaid’s body. No question pressing on the inner self was placed anywhere.</p>
+<p>Nevertheless — or precisely for that reason — the inner self was drawn out. The role of customer worked as a cover that spared people from exposing their bare selves, and under that cover, bare desire and violence came out all the more. Here the audience moved from the side of being written on to the side of writing, and the performer became the surface written on. In <em>Existence No.2</em>, the author wrote on audience members covered in plastic sheeting, and the audience stayed on the side of being written on. In <em>Tomatoes at Knockdown Prices</em>, visitors took crayons and moved to the side of writing, and role reversal occurred in form. But they went into self-defense and could not fully enter the role. In <em>The Mermaid Conditioning Program</em>, the direction of <em>Existence No.2</em> is exactly reversed: the audience writes on the performer’s body. Moreover, given the role of customer, the audience was able to enter that role. Role reversal, by way of the detour of giving a role, can be said to have occurred for the first time not only in form but in substance.</p>
+<p>Here again, however, what could be aimed at was the place, not everything that happened there. The place of the role could be designed. But that an audience member would abandon the brush, plunge a bare hand into the bucket of paint, and write — that could not be designed. Just as disturbance in <em>Tomatoes at Knockdown Prices</em> was generated beyond the design, in <em>The Mermaid Conditioning Program</em> what was drawn out overflowed beyond the design.</p>
+<p>Giving a role also changed where the audience stood. To write on the mermaid is for audience members to move, with their own hands, from a position of pitying the mermaid to a position of writing their desire onto her. Those who wrote, therefore, can no longer simply sympathize with the mermaid. Meanwhile, in the eyes of those who did not write, not only the mermaid but also the figures of the audience writing on her became part of the performance. Among the responses heard after the show were sympathy — a wish to let the mermaid taste the warmth of everyday life — and a strong unease at the sight of male customers writing on the mermaid. The same performance became a different experience depending on whether one wrote or watched without writing. The audience did not view a story; they experienced their own complicity, or that of other audience members.</p>
+<p>And the violence drawn out did not stay on the audience’s side. It was carved into the performer’s body and seeped inward. The theme of the work was a state of mind that can hold self-worth only as others’ evaluation, and tilts toward dependence on others. How that “other” relates to the performer was the crux of the work. Enduring whatever is done, accepting it, numbed to pain, growing sick without knowing — the state conceived as the mermaid’s inner life became real within the performer through this contact. The violence received from the audience drove the scenes that followed — love and dependence on the one customer who had been kind, and finally killing him — not as acting, but as the performer’s own inner life. The phase of infiltration is just such a moment: what comes from outside seeps into the body and changes the inner life of the one who is writing.</p>
+<p>In <em>Tomatoes at Knockdown Prices</em>, contact with others broke the tuning, and improvisation was born from that breakdown. In <em>The Mermaid Conditioning Program</em>, contact with others seeped into the body, and the next scene was born from that infiltration. If the former renewed the self through disturbance, the latter transformed the self through infiltration. In both, the theme of this practice — reconnecting with the outside while holding the inner — appears as a process that emerges only by way of others.</p>
+<h2 id="sec-07">Conclusion</h2>
+<p>This essay has presented an attempt to extend <em>sotsui</em> in calligraphy into body, time, and space.</p>
+<p><em>Sotsui</em> has mainly been grasped through the writing that appears on paper. This practice offers that <em>sotsui</em> with the writer’s whole body. By taking as the work not only the writing that appears, but the writing body itself, it presents calligraphy as an act that deals with the flow of emotion and sensation itself.</p>
+<p>Within this continuing time, the cycle of <em>torine</em> repeats, and several phases — sinking, reconstruction, disturbance, and infiltration — appear as they shift into one another. And the subject goes back and forth between the phase of dissolution, in which it is nearly swallowed by the phenomenon, and the phase of doubling, in which it takes on the reversal. The extension of <em>sotsui</em> is nothing other than disclosing to the audience, as a bodily state, the wavering of the subject that has until now been read only indirectly from writing on paper.</p>
+<p>The body in <em>Kintsugi</em>, reconnecting while holding chaos, is the moment in which this back-and-forth appeared most clearly.</p>
+<p>The structure of <em>sotsui</em> and <em>torine</em> presented in this essay was not derived by theoretical deduction. It has risen out of the making of concrete works, the accumulated viewing of others’ expression, and the time of digesting them. The thinking of <em>torine</em> is itself the method that produced this essay.</p>
+<p>And the extension of <em>sotsui</em> is not completed within the time of performance alone. As a ritual of digesting past friction and inner chaos and tying them back to one’s own core, it keeps acting on the life that follows. When she wavers again in reality, the author returns to expression, and there grasps her own state anew. Writing and living, that is, are not separate. Within the cycle of <em>torine</em>, both collapse again and again, and are tied together again and again.</p>
+  </article>
+
+  <section class="notes">
+    <div class="notes__h">N O T E S</div>
+    <ol>
+<li id="note1" class="note"><a class="note__back" href="#ref1" aria-label="Back to text">1</a><span class="note__body">Tuning means bringing one’s own bodily sensation into line with the emotions and sensations that rise from a concept. Just as tuning an instrument brings a string into line with a reference pitch, one takes the concept as the reference, draws the heart toward the emotions and sensations that follow it, and lets the body be possessed by that state. Tuning in this essay means this attunement of the whole body.</span></li>
+<li id="note2" class="note"><a class="note__back" href="#ref2" aria-label="Back to text">2</a><span class="note__body">Inoue Yūichi’s words (“I do not know how I wrote it”) are from his own handwriting as quoted in Miyatsu Daisuke, <em>Gendai bijutsushi ni okeru zen’ei sho no repojishoningu: Bokujinkai to sono dōjidai hyōgen o megutte</em> [Repositioning Avant-Garde Calligraphy in the History of Contemporary Art: The Bokujinkai and Its Contemporaries] (Kyoto: Shibunkaku Shuppan, 2022), 104–108. Quotations from Japanese sources in this essay are translated by the author.</span></li>
+<li id="note3" class="note"><a class="note__back" href="#ref3" aria-label="Back to text">3</a><span class="note__body">Unagami Masaomi, <em>Inoue Yūichi: Sho wa bannin no geijutsu de aru</em> [Inoue Yūichi: Calligraphy Is an Art for Everyone] (Kyoto: Minerva Shobō, 2005), 133.</span></li>
+<li id="note4" class="note"><a class="note__back" href="#ref4" aria-label="Back to text">4</a><span class="note__body">Inoue Yūichi, <em>Sho no kaihō to wa: Inoue Yūichi zenbunshū, Hibi no zeppitsu zōho ketteiban</em> [What Is the Liberation of Calligraphy? Collected Writings of Inoue Yūichi] (Tokyo: Geijutsu Shinbunsha, 1996), 101–102. A poem of his own attached to the work <em>No. 9</em> (1955).</span></li>
+<li id="note5" class="note"><a class="note__back" href="#ref5" aria-label="Back to text">5</a><span class="note__body">Ishikawa Kyūyō, <em>Hisshoku no kōzō: Kaku koto no genshōgaku</em> [The Structure of Hisshoku: A Phenomenology of Writing] (Tokyo: Chikuma Shobō, 1992), 23–28.</span></li>
+<li id="note6" class="note"><a class="note__back" href="#ref6" aria-label="Back to text">6</a><span class="note__body">Ueda Sōkyū, “Sakui no hanashi” [On Sakui], in <em>Sho o aisuru hito e: Ueda Sōkyū shoronshū</em> [For Those Who Love Calligraphy: Collected Essays of Ueda Sōkyū] (Tokyo: Tenrai Shoin, 1995), 58–63. First published in <em>Sho no bi</em>, nos. 2–4, 1948.</span></li>
+<li id="note7" class="note"><a class="note__back" href="#ref7" aria-label="Back to text">7</a><span class="note__body"><em>Torine</em> is a word coined by the author. It refers to the movement of drawing a core out of a tangle of impressions. Its structure is discussed in detail in 4-2.</span></li>
+<li id="note8" class="note"><a class="note__back" href="#ref8" aria-label="Back to text">8</a><span class="note__body">Words of Yūichi as quoted in Miyatsu, <em>Gendai bijutsushi ni okeru zen’ei sho no repojishoningu</em>, 57.</span></li>
+<li id="note9" class="note"><a class="note__back" href="#ref9" aria-label="Back to text">9</a><span class="note__body">In <em>Akazukin</em>, for example, there is a scene in which feelings surrounding defloration appear, without condensing into characters, as a red line crawling over the paper. In <em>Kintsugi</em>, too, there are recurring moments of laying chaos bare as line while holding it. These stay in a phase of low condensation, yet still establish expression as the intensity of a line’s movement.</span></li>
+<li id="note10" class="note"><a class="note__back" href="#ref10" aria-label="Back to text">10</a><span class="note__body">Morita Shiryū, “Sho to chūshō kaiga” [Calligraphy and Abstract Painting], in Katō Shūichi and Kuwabara Takeo, eds., <em>Iwanami kōza tetsugaku</em> [Iwanami Lectures on Philosophy], vol. 14, <em>Geijutsu</em> [Art] (Tokyo: Iwanami Shoten, 1969), 222.</span></li>
+<li id="note11" class="note"><a class="note__back" href="#ref11" aria-label="Back to text">11</a><span class="note__body">Maurice Merleau-Ponty, <em>The Visible and the Invisible</em>, ed. Claude Lefort, trans. Alphonso Lingis (Evanston: Northwestern University Press, 1968), working note “Flesh of the world—Flesh of the body—Being,” 249. The phrase “quasi-‘reflective’ redoubling” follows Lingis’s translation; the other quoted words are translated from the Japanese edition, <em>Mieru mono to mienai mono</em>, trans. Takiura Shizuo and Kida Gen (Tokyo: Misuzu Shobō, 1989), 365.</span></li>
+<li id="note12" class="note"><a class="note__back" href="#ref12" aria-label="Back to text">12</a><span class="note__body">Erika Fischer-Lichte, <em>The Transformative Power of Performance: A New Aesthetics</em>, trans. Saskya Iris Jain (London: Routledge, 2008), chap. 4, “The Performative Generation of Materiality,” 75–137. Japanese edition: <em>Pafōmansu no bigaku</em>, trans. Nakajima Hiroaki et al. (Tokyo: Ronsōsha, 2009), 124.</span></li>
+<li id="note13" class="note"><a class="note__back" href="#ref13" aria-label="Back to text">13</a><span class="note__body">Merleau-Ponty, <em>The Visible and the Invisible</em>, “The Intertwining—The Chiasm,” 130–155. Japanese edition, 184–187.</span></li>
+<li id="note14" class="note"><a class="note__back" href="#ref14" aria-label="Back to text">14</a><span class="note__body">Fischer-Lichte, <em>The Transformative Power of Performance</em>, chap. 3, “Shared Bodies, Shared Spaces: The Bodily Co-Presence of Actors and Spectators,” 38–74. Japanese edition, 57–58.</span></li>
+<li id="note15" class="note"><a class="note__back" href="#ref15" aria-label="Back to text">15</a><span class="note__body"><em>Existence No.2</em>, 2024, Fine Arts and Calligraphy Building, Fukuoka University of Education. Visitors entered the space wearing plastic sheeting over themselves, and the author wrote indiscriminately on top of it.</span></li>
+<li id="note16" class="note"><a class="note__back" href="#ref16" aria-label="Back to text">16</a><span class="note__body">Fischer-Lichte, <em>The Transformative Power of Performance</em>, chap. 3. Japanese edition, 58–59.</span></li>
+    </ol>
+  </section>
+
+  <footer class="foot">
+    <div class="red"><i>The Extension of Sotsui</i></div>
+    OGA · Calligraphy Performer
+  </footer>
+
+</div>
+</body>
+</html>
